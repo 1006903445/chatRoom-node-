@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="renderer" content="webkit">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta name="author" content="小懒虫">
+	<meta name="keywords" content="关键词1,关键词2">
+	<meta name="description" content="描述语句">
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+	<link rel="apple-touch-icon" href="/favicon.png">
+	<title></title>
+	<style>
+		.mine{background: green;}
+	</style>
+</head>
+<body>
+	<script src="http://localhost:8080/socket.io/socket.io.js"></script>
+	<script>
+		window.onload = function(){
+			let cur_username = '';
+			let reg = document.getElementById('reg');
+			let login = document.getElementById('login');
+			let user = document.getElementById('user');
+			let pass = document.getElementById('pass');
+			let textarea = document.getElementById('textarea');
+			let send = document.getElementById('send');
+			let listbox = document.getElementById('listbox');
+			reg.onclick= function(){
+				sock.emit('reg',user.value,pass.value);
+			};
+
+			login.onclick= function(){
+				sock.emit('login',user.value,pass.value);
+			};
+
+			send.onclick= function(){
+				sock.emit('msg',textarea.value);
+			}
+
+
+			let sock = io.connect('ws://localhost:8080/');
+			sock.on('reg_ret',(code,msg)=>{
+				if(code){
+					alert('注册失败'+msg)
+				}else{
+					alert('注册成功')
+				}
+			})
+			sock.on('login_ret',(code,msg)=>{
+				if(code){
+					alert('登录失败'+msg)
+				}else{
+					alert('登录成功');
+					cur_username = user.value;
+				}
+			})
+			sock.on('msg_ret',(code,msg)=>{
+				if(code){
+					alert('消息发送失败'+msg)
+				}else{
+					let oli = document.createElement('li');
+					oli.className = 'mine';
+					oli.innerHTML = `<h4>${cur_username}</h4><p>${textarea.value}</p>`;
+					listbox.appendChild(oli)
+					textarea.value = '';
+				}
+			})
+			sock.on('msg', (name,txt)=>{
+				let oli = document.createElement('li');
+				oli.innerHTML = `<h4>${name}</h4><p>${txt}</p>`;
+				listbox.appendChild(oli)
+			})
+		}
+	</script>
+	<form id="form" onsubmit="return false">
+		<div>
+			用户吗 <input id="user" type="text" name="user">
+		</div>
+		<div>
+			密码 <input id="pass" type="password" name="pass">
+		</div>
+		<button type="button" id="reg">注册</button>
+		<button type="button" id="login">登录</button>
+	</form>
+	<hr>
+	<textarea id="textarea" cols="30" rows="4"></textarea>
+	<button type="button" id="send">发送</button>
+	<ul id="listbox">
+		<li>
+			<h4>name</h4>
+			<p></p>
+		</li>
+	</ul>
+</body>
+</html>
