@@ -1,9 +1,9 @@
-# chatRoom-node-
+# chatRoom-node
 
-const http = require('http');
-const fs = require('fs');
-const url = require('url');
-const mysql = require('mysql');
-const io = require('socket.io');
+const http = require('http');/n
+const fs = require('fs');/n
+const url = require('url');/n
+const mysql = require('mysql');/n
+const io = require('socket.io');/n
 
  
